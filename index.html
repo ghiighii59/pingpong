@@ -10,7 +10,7 @@
         
         .player-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; max-width: calc(50% - 70px); background: #1a1a1a; padding: 2vh 0; }
         
-        .label-wrapper { display: flex; align-items: center; gap: 3vw; margin-bottom: 0; position: relative; margin-top: 5vh; }
+        .label-wrapper { display: flex; align-items: center; gap: 3vw; margin-bottom: 0; position: relative; margin-top: 12vh; }
         .player-label { font-size: 8vh; font-weight: bold; }
         .label-blue { color: #3498db; }
         .label-red { color: #e74c3c; }
@@ -82,7 +82,7 @@
 
     <div id="game-container">
         <div class="player-area" id="area-blue" onclick="changeScore('blue', 1)">
-            <div class="label-wrapper">
+            <div class="label-wrapper" id="label-wrapper-blue">
                 <div class="player-label label-blue">블루</div>
                 <div class="set-digit" id="set-blue">0</div>
             </div>
@@ -106,7 +106,7 @@
         </div>
         
         <div class="player-area" id="area-red" onclick="changeScore('red', 1)">
-            <div class="label-wrapper">
+            <div class="label-wrapper" id="label-wrapper-red">
                 <div class="set-digit" id="set-red">0</div>
                 <div class="player-label label-red">레드</div>
             </div>
@@ -254,10 +254,15 @@
             container.style.flexDirection = isReversed ? 'row' : 'row-reverse';
             minusGroup.style.flexDirection = isReversed ? 'row' : 'row-reverse';
             
+            const bWrapper = document.getElementById('label-wrapper-blue');
+            const rWrapper = document.getElementById('label-wrapper-red');
+            bWrapper.style.flexDirection = isReversed ? 'row-reverse' : 'row';
+            rWrapper.style.flexDirection = isReversed ? 'row' : 'row-reverse';
+
             const bBtn = document.querySelector('.set-minus-blue');
             const rBtn = document.querySelector('.set-minus-red');
-            if (isReversed) { bBtn.style.left = "calc(50% - 35px)"; rBtn.style.left = "calc(50% + 35px)"; }
-            else { bBtn.style.left = "calc(50% + 35px)"; rBtn.style.left = "calc(50% - 35px)"; }
+            if (isReversed) { bBtn.style.left = "calc(50% + 35px)"; rBtn.style.left = "calc(50% - 35px)"; }
+            else { bBtn.style.left = "calc(50% - 35px)"; rBtn.style.left = "calc(50% + 35px)"; }
         }
 
         function showNotice(msg) { document.getElementById('custom-alert-msg').innerText = msg; document.getElementById('custom-alert-modal').style.display = 'flex'; }
