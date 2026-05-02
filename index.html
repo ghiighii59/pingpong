@@ -56,10 +56,15 @@
         .active-btn { border: 3px solid gold !important; background: #555 !important; }
         
         .fs-btn { position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; z-index: 3000; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
-        #stt-toggle-btn { position: fixed; top: 45px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
+        .fs-btn.active { background: #27ae60; border-color: #fff; }
+
+        #stt-toggle-btn { position: fixed; top: 50px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         #stt-toggle-btn.active { background: #27ae60; border-color: #fff; }
         
-        .top-info-text { position: fixed; top: 85px; left: 10px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; line-height: 1.4; text-align: left; }
+        .top-info-text { position: fixed; left: 12px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; line-height: 1.4; text-align: left; }
+        .info-landscape { top: 32px; }
+        .info-spacing { top: 72px; }
+
         .modal-info-text { text-align: center; font-size: 0.75rem; color: #fff; opacity: 0.8; margin-top: 2vh; line-height: 1.5; }
 
         .last-result-box { margin-top: 1.5vh; padding: 1vh 2vw; background: rgba(255,215,0,0.08); border: none !important; border-radius: 15px; display: none; }
@@ -69,8 +74,10 @@
 <body>
 
     <button class="fs-btn" id="fullScreenBtn">전체화면</button>
+    <div class="top-info-text info-landscape">※ 가로모드 권장</div>
+
     <button id="stt-toggle-btn">음성인식 시작</button>
-    <div class="top-info-text">※ 가로모드 권장<br>※ 띄어읽기 권장</div>
+    <div class="top-info-text info-spacing">※ 띄어읽기 권장</div>
 
     <div id="game-container">
         <div class="player-area" id="area-blue" onclick="changeScore('blue', 1)">
@@ -179,6 +186,15 @@
 
         document.getElementById('stt-toggle-btn').addEventListener('click', toggleSTT);
         document.getElementById('fullScreenBtn').addEventListener('click', toggleFullScreen);
+
+        document.addEventListener('fullscreenchange', () => {
+            const fsBtn = document.getElementById('fullScreenBtn');
+            if (document.fullscreenElement) {
+                fsBtn.classList.add('active');
+            } else {
+                fsBtn.classList.remove('active');
+            }
+        });
 
         function toggleSTT() {
             if (!recognition) return alert("지원하지 않는 브라우저입니다.");
