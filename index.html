@@ -12,7 +12,7 @@
         
         .label-wrapper { display: flex; align-items: center; gap: 3vw; margin-bottom: 0; position: relative; margin-top: 5vh; width: 80%; justify-content: center; }
         
-        .player-label { font-size: 8vh; font-weight: bold; position: relative; top: 5vh; }
+        .player-label { font-size: 5vh; font-weight: bold; position: relative; top: 5vh; }
         .label-blue { color: #3498db; }
         .label-red { color: #e74c3c; }
         
@@ -57,7 +57,7 @@
         .active-btn { border: 3px solid gold !important; background: #555 !important; }
         
         .fs-btn { position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; z-index: 3000; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
-        .fs-btn.active { background: #27ae60; border-color: #fff; }
+        .fs-btn.active { background: #27ae60 !important; border-color: #fff !important; }
 
         #stt-toggle-btn { position: fixed; top: 70px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         #stt-toggle-btn.active { background: #27ae60; border-color: #fff; }
@@ -183,6 +183,15 @@
         document.getElementById('stt-toggle-btn').addEventListener('click', toggleSTT);
         document.getElementById('fullScreenBtn').addEventListener('click', toggleFullScreen);
 
+        document.addEventListener('fullscreenchange', () => {
+            const fsBtn = document.getElementById('fullScreenBtn');
+            if (document.fullscreenElement) {
+                fsBtn.classList.add('active');
+            } else {
+                fsBtn.classList.remove('active');
+            }
+        });
+
         function toggleSTT() {
             if (!recognition) return alert("지원하지 않는 브라우저입니다.");
             const btn = document.getElementById('stt-toggle-btn');
@@ -249,8 +258,14 @@
         }
 
         async function toggleFullScreen() {
-            if (!document.fullscreenElement) { await document.documentElement.requestFullscreen(); await requestWakeLock(); }
-            else { await document.exitFullscreen(); if (wakeLock) { await wakeLock.release(); wakeLock = null; } }
+            if (!document.fullscreenElement) { 
+                await document.documentElement.requestFullscreen(); 
+                await requestWakeLock(); 
+            }
+            else { 
+                await document.exitFullscreen(); 
+                if (wakeLock) { await wakeLock.release(); wakeLock = null; } 
+            }
         }
 
         function checkGameModeChange(val) {
