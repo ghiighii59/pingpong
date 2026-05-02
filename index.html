@@ -23,7 +23,7 @@
 
         .score { font-size: 45vh; line-height: 1; font-weight: 900; user-select: none; letter-spacing: -2vh; transform: scaleX(0.85); transform-origin: center; text-align: center; white-space: nowrap; pointer-events: none; margin-top: -5vh; }
         
-        .voice-guide { font-size: 1.8vh; color: white; opacity: 0.8; margin-top: 2vh; font-weight: normal; text-align: center; line-height: 1.4; }
+        .voice-guide { font-size: 0.8rem; color: white; opacity: 0.8; margin-top: 2vh; font-weight: normal; text-align: center; line-height: 1.4; }
 
         .serve-dot { font-size: 8vh; color: white; visibility: hidden; margin-top: 2vh; margin-bottom: 1vh; }
         .serving .serve-dot { visibility: visible; }
@@ -59,7 +59,7 @@
         #stt-toggle-btn { position: fixed; top: 10px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         #stt-toggle-btn.active { background: #27ae60; border-color: #fff; }
         
-        .top-info-text { position: fixed; top: 15px; left: 140px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; }
+        .top-info-text { position: fixed; top: 15px; left: 140px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; line-height: 1.4; }
         .modal-info-text { text-align: center; font-size: 0.75rem; color: #fff; opacity: 0.8; margin-top: 2vh; line-height: 1.5; }
 
         .last-result-box { margin-top: 1.5vh; padding: 1vh 2vw; background: rgba(255,215,0,0.08); border: none !important; border-radius: 15px; display: none; }
@@ -70,7 +70,7 @@
 
     <button class="fs-btn" id="fullScreenBtn">전체 화면</button>
     <button id="stt-toggle-btn">🎤 음성인식 시작</button>
-    <div class="top-info-text">※ 띄어읽기를 잘 해야 음성인식이 잘 됩니다.</div>
+    <div class="top-info-text">※ 띄어읽기를 잘 해야 음성인식이 잘 됩니다.<br>※ 가로모드 권장</div>
 
     <div id="game-container">
         <div class="player-area" id="area-blue" onclick="changeScore('blue', 1)">
