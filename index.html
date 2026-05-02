@@ -152,7 +152,6 @@
                 const text = event.results[event.results.length - 1][0].transcript.replace(/\s/g, "");
                 console.log("인식된 텍스트:", text);
 
-                // [수정] 컨펌 모달(예/아니오) 상태일 때 음성 인식 최우선 처리
                 if (document.getElementById('custom-confirm-modal').style.display === 'flex') {
                     if (text.includes("예") || text.includes("네") || text.includes("응") || text.includes("어")) { 
                         document.getElementById('confirm-yes-btn').click(); 
@@ -164,28 +163,28 @@
                     }
                 }
 
-                if (text.includes("블루원마이너스")) changeScore('blue', -1);
-                else if (text.includes("레드원마이너스")) changeScore('red', -1);
-                else if (text.includes("블루원")) changeScore('blue', 1);
-                else if (text.includes("레드원")) changeScore('red', 1);
+                if (text.includes("블루원마이너스", "블루원 마이너스", "블루마이너스", "블루 마이너스")) changeScore('blue', -1);
+                else if (text.includes("레드원마이너스", "레드원 마이너스", "레드마이너스", "레드 마이너스")) changeScore('red', -1);
+                else if (text.includes("블루원", "블루 원")) changeScore('blue', 1);
+                else if (text.includes("레드원", "레드 원")) changeScore('red', 1);
 
-                if (text.includes("삼판이승") || text.includes("3판2승")) checkGameModeChange(2);
-                if (text.includes("오판삼승") || text.includes("5판3승")) checkGameModeChange(3);
-                if (text.includes("칠판사승") || text.includes("7판4승")) checkGameModeChange(4);
+                if (text.includes("삼판이승", "삼판") || text.includes("3판2승")) checkGameModeChange(2);
+                if (text.includes("오판삼승", "오판") || text.includes("5판3승")) checkGameModeChange(3);
+                if (text.includes("칠판사승", "칠판") || text.includes("7판4승")) checkGameModeChange(4);
 
-                if (text.includes("블루첫서브")) setInitialServer('blue');
-                if (text.includes("레드첫서브")) setInitialServer('red');
+                if (text.includes("블루첫서브", "블루 첫서브")) setInitialServer('blue');
+                if (text.includes("레드첫서브", "레드 첫서브")) setInitialServer('red');
 
                 const blueHandiMatch = text.match(/블루핸디(\d+)점/);
                 if (blueHandiMatch) setHandiByVoice('blue', parseInt(blueHandiMatch[1]));
                 const redHandiMatch = text.match(/레드핸디(\d+)점/);
                 if (redHandiMatch) setHandiByVoice('red', parseInt(redHandiMatch[1]));
 
-                if (text.includes("경기시작") || text.includes("경기재개")) startGame();
-                if (text.includes("전체화면")) toggleFullScreen(); // 음성 명령 호출
-                if (text.includes("테이블전환")) switchTable();
-                if (text.includes("현재경기설정변경")) openModifySetup();
-                if (text.includes("새경기")) askNewGame();
+                if (text.includes("경기시작", "시작") || text.includes("경기재개")) startGame();
+                if (text.includes("전체화면")) toggleFullScreen();
+                if (text.includes("테이블전환", "전환")) switchTable();
+                if (text.includes("현재경기설정변경", "현재경기 설정변경", "설정변경", "설정 변경")) openModifySetup();
+                if (text.includes("새경기", "새 경기", "리셋")) askNewGame();
             };
 
             recognition.onend = () => { if (isSttActive) recognition.start(); };
@@ -270,7 +269,6 @@
             document.getElementById('confirm-no-btn').onclick = () => { document.getElementById('custom-confirm-modal').style.display = 'none'; };
         }
 
-        // [수정] 전체화면 음성 인식 및 버튼 동작 안정화
         async function toggleFullScreen() {
             try {
                 if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
