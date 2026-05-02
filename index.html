@@ -59,7 +59,7 @@
         #stt-toggle-btn { position: fixed; top: 45px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         #stt-toggle-btn.active { background: #27ae60; border-color: #fff; }
         
-        .top-info-text { position: fixed; top: 15px; left: 140px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; line-height: 1.4; }
+        .top-info-text { position: fixed; top: 85px; left: 10px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; line-height: 1.4; text-align: left; }
         .modal-info-text { text-align: center; font-size: 0.75rem; color: #fff; opacity: 0.8; margin-top: 2vh; line-height: 1.5; }
 
         .last-result-box { margin-top: 1.5vh; padding: 1vh 2vw; background: rgba(255,215,0,0.08); border: none !important; border-radius: 15px; display: none; }
@@ -69,7 +69,7 @@
 <body>
 
     <button class="fs-btn" id="fullScreenBtn">전체화면</button>
-    <button id="stt-toggle-btn">🎤 음성인식 시작</button>
+    <button id="stt-toggle-btn">음성인식 시작</button>
     <div class="top-info-text">※ 가로모드 권장<br>※ 띄어읽기 권장</div>
 
     <div id="game-container">
@@ -110,7 +110,10 @@
 
     <div id="handicap-modal" class="modal-overlay" style="display: flex;">
         <div class="modal-content">
-            <div class="modal-title">경기 설정</div>
+            <div class="modal-info-text" style="font-size: 0.85rem; margin-bottom: 3vh; opacity: 1;">
+                ※ 음성인식 비프음을 없애려면 다음과 같이 설정하세요.<br>
+                ▶ 설정(앱) ➜ 소리 및 진동 ➜ 음량 ➜ 알림 (소리 낮추기)
+            </div>
             <div style="display: flex; gap: 10px; margin-bottom: 1.5vh; justify-content: center;">
                 <button id="mode-3" class="game-mode-btn" onclick="checkGameModeChange(2)">3판2승</button>
                 <button id="mode-5" class="game-mode-btn" onclick="checkGameModeChange(3)">5판3승</button>
@@ -139,11 +142,6 @@
                 </div>
             </div>
             <button class="start-btn" onclick="startGame()">경기 시작 / 재개</button>
-            
-            <div class="modal-info-text">
-                ※ 음성인식 비프음을 없애려면 다음과 같이 설정하세요.<br>
-                ▶ 설정(앱) ➜ 소리 및 진동 ➜ 음량 ➜ 알림 (소리 낮추기)
-            </div>
 
             <div id="last-result-box" class="last-result-box">
                 <div style="color:gold; font-size: 0.9rem;">직전 경기 결과</div>
@@ -188,13 +186,13 @@
             if (!isSttActive) { 
                 isSttActive = true; 
                 recognition.start(); 
-                btn.innerText = "🎤 음성인식 중..."; 
+                btn.innerText = "음성인식 중.."; 
                 btn.classList.add('active'); 
             }
             else { 
                 isSttActive = false;
                 recognition.stop(); 
-                btn.innerText = "🎤 음성인식 시작"; 
+                btn.innerText = "음성인식 시작"; 
                 btn.classList.remove('active'); 
             }
         }
