@@ -175,8 +175,18 @@
         function toggleSTT() {
             if (!recognition) return alert("지원하지 않는 브라우저입니다.");
             const btn = document.getElementById('stt-toggle-btn');
-            if (!isSttActive) { recognition.start(); isSttActive = true; btn.innerText = "🎤 음성인식 중..."; btn.classList.add('active'); }
-            else { recognition.stop(); isSttActive = false; btn.innerText = "🎤 음성인식 시작"; btn.classList.remove('active'); }
+            if (!isSttActive) { 
+                isSttActive = true; 
+                recognition.start(); 
+                btn.innerText = "🎤 음성인식 중..."; 
+                btn.classList.add('active'); 
+            }
+            else { 
+                isSttActive = false;
+                recognition.stop(); 
+                btn.innerText = "🎤 음성인식 시작"; 
+                btn.classList.remove('active'); 
+            }
         }
 
         async function requestWakeLock() { if ('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} } }
