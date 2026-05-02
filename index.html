@@ -35,7 +35,7 @@
         
         .setup-btn { background: #2980b9; height: auto; min-height: 0; }
 
-        .minus-group { display: flex; width: 100%; justify-content: space-around; margin-top: 11vh; padding: 0 10px; box-sizing: border-box; transition: flex-direction 0.3s; }
+        .minus-group { display: flex; width: 100%; justify-content: space-around; margin-top: 9vh; padding: 0 10px; box-sizing: border-box; transition: flex-direction 0.3s; }
         .minus-btn { background: rgba(255,255,255,0.1); font-size: 4vh; width: 8vh; height: 8vh; max-width: 50px; max-height: 50px; border-radius: 50%; border: 2px solid #555; color: #888; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .minus-blue { border-color: #3498db; color: #3498db; }
         .minus-red { border-color: #e74c3c; color: #e74c3c; }
@@ -251,7 +251,19 @@
         function setInitialServer(player) { if (isGameStarted) return; initialServer = player; currentServer = player; document.getElementById('btn-server-blue').classList.toggle('active-btn', player === 'blue'); document.getElementById('btn-server-red').classList.toggle('active-btn', player === 'red'); }
         async function startGame() { if (targetSets === null || initialServer === null) { showNotice("설정을 완료해주세요."); return; } await requestWakeLock(); if (!isGameStarted) { scores.blue = handicaps.blue; scores.red = handicaps.red; isGameStarted = true; } document.getElementById('handicap-modal').style.display = 'none'; updateDisplay(); }
 
-        function changeScore(player, delta) { if (!isGameStarted) return; if (scores[player] + delta >= 0) { scores[player] += delta; calculateServer(); updateDisplay(); if (delta > 0) speakScore(`${scores.blue} 대 ${scores.red}`); checkSetWinner(); } }
+        function changeScore(player, delta) { 
+            if (!isGameStarted) return; 
+            if (scores[player] + delta >= 0) { 
+                scores[player] += delta; 
+                calculateServer(); 
+                updateDisplay(); 
+                if (delta > 0) {
+                    if (currentServer === 'blue') speakScore(`${scores.blue} 대 ${scores.red}`);
+                    else speakScore(`${scores.red} 대 ${scores.blue}`);
+                }
+                checkSetWinner(); 
+            } 
+        }
         function changeSetScore(player, delta) { if (sets[player] + delta >= 0) { sets[player] += delta; updateDisplay(); } }
         function calculateServer() { const total = scores.blue + scores.red, hSum = handicaps.blue + handicaps.red; const other = (initialServer === 'blue' ? 'red' : 'blue'); if (scores.blue >= 10 && scores.red >= 10) currentServer = (total % 2 === hSum % 2) ? initialServer : other; else currentServer = (Math.floor(total / 2) % 2 === Math.floor(hSum / 2) % 2) ? initialServer : other; }
         function checkSetWinner() { if ((scores.blue >= 11 || scores.red >= 11) && Math.abs(scores.blue - scores.red) >= 2) { setHistory.push(`${scores.blue}:${scores.red}`); sets[scores.blue > scores.red ? 'blue' : 'red']++; if (sets.blue === targetSets || sets.red === targetSets) { endGameImmediately(); } else { speakScore("세트 종료"); scores.blue = handicaps.blue; scores.red = handicaps.red; initialServer = (initialServer === 'blue' ? 'red' : 'blue'); currentServer = initialServer; updateDisplay(); } } }
