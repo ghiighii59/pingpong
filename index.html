@@ -35,7 +35,7 @@
         
         .setup-btn { background: #2980b9; height: auto; min-height: 0; }
 
-        .minus-group { display: flex; width: 100%; justify-content: space-around; margin-top: 9vh; padding: 0 10px; box-sizing: border-box; transition: flex-direction 0.3s; }
+        .minus-group { display: flex; width: 100%; justify-content: space-around; margin-top: 8vh; padding: 0 10px; box-sizing: border-box; transition: flex-direction 0.3s; }
         .minus-btn { background: rgba(255,255,255,0.1); font-size: 4vh; width: 8vh; height: 8vh; max-width: 50px; max-height: 50px; border-radius: 50%; border: 2px solid #555; color: #888; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .minus-blue { border-color: #3498db; color: #3498db; }
         .minus-red { border-color: #e74c3c; color: #e74c3c; }
@@ -59,6 +59,9 @@
         #stt-toggle-btn { position: fixed; top: 10px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         #stt-toggle-btn.active { background: #27ae60; border-color: #fff; }
         
+        .top-info-text { position: fixed; top: 15px; left: 140px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; }
+        .modal-info-text { text-align: left; font-size: 0.85rem; color: #fff; opacity: 0.8; margin-top: 2vh; line-height: 1.5; }
+
         .last-result-box { margin-top: 1.5vh; padding: 1vh 2vw; background: rgba(255,215,0,0.08); border: none !important; border-radius: 15px; display: none; }
         .handi-btn { width: 40px; height: 40px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 24px; font-weight: bold; }
     </style>
@@ -67,6 +70,7 @@
 
     <button class="fs-btn" id="fullScreenBtn">전체 화면</button>
     <button id="stt-toggle-btn">🎤 음성인식 시작</button>
+    <div class="top-info-text">※ 띄어읽기를 잘 해야 음성인식이 잘 됩니다.</div>
 
     <div id="game-container">
         <div class="player-area" id="area-blue" onclick="changeScore('blue', 1)">
@@ -135,6 +139,12 @@
                 </div>
             </div>
             <button class="start-btn" onclick="startGame()">경기 시작 / 재개</button>
+            
+            <div class="modal-info-text">
+                ※ 음성인식 비프음을 없애려면 다음과 같이 설정하세요.<br>
+                ▶ 설정 ➜ 소리 및 진동 ➜ 음량 ➜ 알림 (소리 낮추기)
+            </div>
+
             <div id="last-result-box" class="last-result-box">
                 <div style="color:gold; font-size: 0.9rem;">직전 경기 결과</div>
                 <div id="last-result-score" style="font-size:1.4rem; font-weight:bold;"></div>
