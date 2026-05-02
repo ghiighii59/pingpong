@@ -10,7 +10,7 @@
         
         .player-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; max-width: calc(50% - 70px); background: #1a1a1a; padding: 2vh 0; }
         
-        .label-wrapper { display: flex; align-items: center; gap: 3vw; margin-bottom: 0; position: relative; }
+        .label-wrapper { display: flex; align-items: center; gap: 3vw; margin-bottom: 0; position: relative; margin-top: 5vh; }
         .player-label { font-size: 8vh; font-weight: bold; }
         .label-blue { color: #3498db; }
         .label-red { color: #e74c3c; }
@@ -58,12 +58,13 @@
         .fs-btn { position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; z-index: 3000; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         .fs-btn.active { background: #27ae60; border-color: #fff; }
 
-        #stt-toggle-btn { position: fixed; top: 65px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
+        #stt-toggle-btn { position: fixed; top: 70px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         #stt-toggle-btn.active { background: #27ae60; border-color: #fff; }
         
         .top-info-text { position: fixed; left: 12px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; line-height: 1.4; text-align: left; }
-        .info-landscape { top: 38px; }
-        .info-spacing { top: 93px; }
+        
+        .info-landscape { top: 45px; }
+        .info-spacing { top: 105px; }
 
         .modal-info-text { text-align: center; font-size: 0.75rem; color: #fff; opacity: 0.8; margin-top: 2vh; line-height: 1.5; }
 
@@ -77,7 +78,7 @@
     <div class="top-info-text info-landscape">※ 가로모드 권장</div>
 
     <button id="stt-toggle-btn">음성인식 시작</button>
-    <div class="top-info-text info-spacing">※ 띄어읽기 권장</div>
+    <div class="top-info-text info-spacing">※ 띄어읽기 권장<br>※ 안될시 새로고침</div>
 
     <div id="game-container">
         <div class="player-area" id="area-blue" onclick="changeScore('blue', 1)">
