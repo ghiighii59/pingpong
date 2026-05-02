@@ -15,9 +15,10 @@
         .label-blue { color: #3498db; }
         .label-red { color: #e74c3c; }
         
-        .set-minus-btn { position: absolute; top: 0; background: rgba(255,255,255,0.1); font-size: 2.5vh; width: 5vh; height: 5vh; border-radius: 50%; border: 1.5px solid #555; color: #888; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
-        .set-minus-blue { left: -7vh; border-color: #3498db; color: #3498db; }
-        .set-minus-red { right: -7vh; border-color: #e74c3c; color: #e74c3c; }
+        /* 세트 마이너스 버튼: 중앙 컨트롤 박스의 마이너스 버튼과 세로 라인 맞춤 */
+        .set-minus-btn { position: fixed; top: 11vh; background: rgba(255,255,255,0.1); font-size: 2.5vh; width: 5vh; height: 5vh; border-radius: 50%; border: 1.5px solid #555; color: #888; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 110; }
+        .set-minus-blue { left: calc(50% - 35px); transform: translateX(-50%); border-color: #3498db; color: #3498db; }
+        .set-minus-red { left: calc(50% + 35px); transform: translateX(-50%); border-color: #e74c3c; color: #e74c3c; }
 
         .set-digit { font-size: 20vh; color: #f1c40f; font-weight: bold; line-height: 1; }
 
@@ -71,7 +72,6 @@
     <div id="game-container">
         <div class="player-area" id="area-blue" onclick="changeScore('blue', 1)">
             <div class="label-wrapper">
-                <div class="set-minus-btn set-minus-blue" onclick="event.stopPropagation(); changeSetScore('blue', -1)">−</div>
                 <div class="player-label label-blue">블루</div>
                 <div class="set-digit" id="set-blue">0</div>
             </div>
@@ -81,6 +81,9 @@
         </div>
         
         <div class="controls">
+            <div class="set-minus-btn set-minus-blue" onclick="event.stopPropagation(); changeSetScore('blue', -1)">−</div>
+            <div class="set-minus-btn set-minus-red" onclick="event.stopPropagation(); changeSetScore('red', -1)">−</div>
+
             <button class="btn setup-btn" onclick="openModifySetup()">현재경기 설정변경</button>
             <button class="btn" onclick="switchTable()">테이블 전환</button>
             <button class="btn reset-btn" onclick="askNewGame()">새 경기</button>
@@ -93,7 +96,6 @@
         
         <div class="player-area" id="area-red" onclick="changeScore('red', 1)">
             <div class="label-wrapper">
-                <div class="set-minus-btn set-minus-red" onclick="event.stopPropagation(); changeSetScore('red', -1)">−</div>
                 <div class="set-digit" id="set-red">0</div>
                 <div class="player-label label-red">레드</div>
             </div>
@@ -160,43 +162,11 @@
 
             recognition.onresult = (event) => {
                 const text = event.results[event.results.length - 1][0].transcript.replace(/\s/g, "");
-                console.log("인식된 텍스트:", text);
-
-                if (document.getElementById('custom-confirm-modal').style.display === 'flex') {
-                    if (text.includes("예") || text.includes("네") || text.includes("응") || text.includes("어")) { 
-                        document.getElementById('confirm-yes-btn').click(); 
-                        return; 
-                    }
-                    if (text.includes("아니오") || text.includes("아니") || text.includes("취소")) { 
-                        document.getElementById('confirm-no-btn').click(); 
-                        return; 
-                    }
-                }
-
                 if (text.includes("블루원 마이너스")) changeScore('blue', -1);
                 else if (text.includes("레드원 마이너스")) changeScore('red', -1);
                 else if (text.includes("블루원")) changeScore('blue', 1);
                 else if (text.includes("레드원")) changeScore('red', 1);
-
-                //if (text.includes("삼판이승") || text.includes("3판2승")) checkGameModeChange(2);
-                //if (text.includes("오판삼승") || text.includes("5판3승")) checkGameModeChange(3);
-                //if (text.includes("칠판사승") || text.includes("7판4승")) checkGameModeChange(4);
-
-                //if (text.includes("블루첫서브")) setInitialServer('blue');
-                //if (text.includes("레드첫서브")) setInitialServer('red');
-
-                //const blueHandiMatch = text.match(/블루핸디(\d+)점/);
-                //if (blueHandiMatch) setHandiByVoice('blue', parseInt(blueHandiMatch[1]));
-                //const redHandiMatch = text.match(/레드핸디(\d+)점/);
-                //if (redHandiMatch) setHandiByVoice('red', parseInt(redHandiMatch[1]));
-
-                //if (text.includes("경기시작") || text.includes("경기재개")) startGame();
-                //if (text.includes("전체화면")) toggleFullScreen();
-                //if (text.includes("테이블전환")) switchTable();
-                //if (text.includes("현재경기설정변경")) openModifySetup();
-                //if (text.includes("새경기")) askNewGame();
             };
-
             recognition.onend = () => { if (isSttActive) recognition.start(); };
         }
 
@@ -204,62 +174,28 @@
         document.getElementById('fullScreenBtn').addEventListener('click', toggleFullScreen);
 
         function toggleSTT() {
-            if (!recognition) return alert("이 브라우저는 음성 인식을 지원하지 않습니다.");
+            if (!recognition) return alert("지원하지 않는 브라우저입니다.");
             const btn = document.getElementById('stt-toggle-btn');
-            if (!isSttActive) {
-                recognition.start();
-                isSttActive = true;
-                btn.innerText = "🎤 음성인식 중...";
-                btn.classList.add('active');
-            } else {
-                recognition.stop();
-                isSttActive = false;
-                btn.innerText = "🎤 음성인식 시작";
-                btn.classList.remove('active');
-            }
+            if (!isSttActive) { recognition.start(); isSttActive = true; btn.innerText = "🎤 음성인식 중..."; btn.classList.add('active'); }
+            else { recognition.stop(); isSttActive = false; btn.innerText = "🎤 음성인식 시작"; btn.classList.remove('active'); }
         }
 
-        async function requestWakeLock() {
-            if ('wakeLock' in navigator) {
-                try {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                } catch (err) {
-                    console.error(`${err.name}, ${err.message}`);
-                }
-            }
-        }
-
-        function setHandiByVoice(p, val) {
-            if (val >= 0 && val <= 10) {
-                handicaps[p] = val;
-                if (val > 0) { handicaps[p==='blue'?'red':'blue'] = 0; document.getElementById(`disp-handi-${p==='blue'?'red':'blue'}`).innerText = 0; }
-                document.getElementById(`disp-handi-${p}`).innerText = val;
-                if (!isGameStarted || (scores.blue === handicaps.blue && scores.red === handicaps.red)) { scores.blue = handicaps.blue; scores.red = handicaps.red; updateDisplay(); }
-            }
-        }
+        async function requestWakeLock() { if ('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} } }
 
         window.addEventListener('wheel', (e) => {
             if (isModalOpen() || !isGameStarted || scrollLock) return;
             scrollLock = true;
-            if (e.deltaY < 0) { changeScore('red', 1); } 
-            else if (e.deltaY > 0) { changeScore('blue', 1); }
+            if (e.deltaY < 0) changeScore('red', 1); else if (e.deltaY > 0) changeScore('blue', 1);
             setTimeout(() => { scrollLock = false; }, 300);
         }, { passive: true });
 
         window.addEventListener('keydown', (e) => {
             if (isModalOpen()) return;
-            if (['ArrowLeft', 'PageUp', 'ArrowUp', 'p', 'P'].includes(e.key)) {
-                e.preventDefault(); changeScore('blue', 1);
-            } else if (['ArrowRight', 'PageDown', 'Enter', ' ', 'ArrowDown', 'n', 'N'].includes(e.key)) {
-                e.preventDefault(); changeScore('red', 1);
-            }
+            if (['ArrowLeft', 'PageUp', 'ArrowUp', 'p', 'P'].includes(e.key)) { e.preventDefault(); changeScore('blue', 1); }
+            else if (['ArrowRight', 'PageDown', 'Enter', ' ', 'ArrowDown', 'n', 'N'].includes(e.key)) { e.preventDefault(); changeScore('red', 1); }
         });
 
-        function isModalOpen() {
-            return (document.getElementById('handicap-modal').style.display === 'flex' || 
-                    document.getElementById('custom-alert-modal').style.display === 'flex' ||
-                    document.getElementById('custom-confirm-modal').style.display === 'flex');
-        }
+        function isModalOpen() { return (document.getElementById('handicap-modal').style.display === 'flex' || document.getElementById('custom-alert-modal').style.display === 'flex' || document.getElementById('custom-confirm-modal').style.display === 'flex'); }
 
         function switchTable() {
             const container = document.getElementById('game-container');
@@ -267,11 +203,15 @@
             const isReversed = container.style.flexDirection === 'row-reverse';
             container.style.flexDirection = isReversed ? 'row' : 'row-reverse';
             minusGroup.style.flexDirection = isReversed ? 'row' : 'row-reverse';
+            
+            const bBtn = document.querySelector('.set-minus-blue');
+            const rBtn = document.querySelector('.set-minus-red');
+            if (isReversed) { bBtn.style.left = "calc(50% - 35px)"; rBtn.style.left = "calc(50% + 35px)"; }
+            else { bBtn.style.left = "calc(50% + 35px)"; rBtn.style.left = "calc(50% - 35px)"; }
         }
 
         function showNotice(msg) { document.getElementById('custom-alert-msg').innerText = msg; document.getElementById('custom-alert-modal').style.display = 'flex'; }
         function closeCustomAlert() { document.getElementById('custom-alert-modal').style.display = 'none'; }
-        
         function showQuestion(msg, onYes) {
             document.getElementById('custom-confirm-msg').innerHTML = msg;
             document.getElementById('custom-confirm-modal').style.display = 'flex';
@@ -280,31 +220,14 @@
         }
 
         async function toggleFullScreen() {
-            try {
-                if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-                    const de = document.documentElement;
-                    if (de.requestFullscreen) await de.requestFullscreen();
-                    else if (de.webkitRequestFullscreen) await de.webkitRequestFullscreen();
-                    else if (de.mozRequestFullScreen) await de.mozRequestFullScreen();
-                    else if (de.msRequestFullscreen) await de.msRequestFullscreen();
-                    await requestWakeLock();
-                } else {
-                    if (document.exitFullscreen) await document.exitFullscreen();
-                    else if (document.webkitExitFullscreen) await document.webkitExitFullscreen();
-                    else if (document.mozCancelFullScreen) await document.mozCancelFullScreen();
-                    else if (document.msExitFullscreen) await document.msExitFullscreen();
-                    if (wakeLock !== null) { await wakeLock.release(); wakeLock = null; }
-                }
-            } catch (err) {
-                console.error("전체화면 전환 오류:", err);
-            }
+            if (!document.fullscreenElement) { await document.documentElement.requestFullscreen(); await requestWakeLock(); }
+            else { await document.exitFullscreen(); if (wakeLock) { await wakeLock.release(); wakeLock = null; } }
         }
 
         function checkGameModeChange(val) {
             const maxS = Math.max(sets.blue, sets.red);
-            if (isGameStarted && maxS >= val) {
-                showQuestion(`세트 승리 요건을 초과합니다.<br>경기를 즉시 종료하시겠습니까?`, () => { targetSets = val; endGameImmediately(); });
-            } else { setGameMode(val); }
+            if (isGameStarted && maxS >= val) { showQuestion(`경기를 종료하시겠습니까?`, () => { targetSets = val; endGameImmediately(); }); }
+            else { setGameMode(val); }
         }
 
         function endGameImmediately() {
@@ -315,115 +238,20 @@
             autoResetAll(true);
         }
 
-        function setGameMode(val) { 
-            targetSets = val; 
-            document.querySelectorAll('.game-mode-btn').forEach(b => b.classList.remove('active-btn'));
-            document.getElementById(`mode-${val*2-1}`).classList.add('active-btn');
-        }
+        function setGameMode(val) { targetSets = val; document.querySelectorAll('.game-mode-btn').forEach(b => b.classList.remove('active-btn')); document.getElementById(`mode-${val*2-1}`).classList.add('active-btn'); }
+        function setInitialServer(player) { if (isGameStarted) return; initialServer = player; currentServer = player; document.getElementById('btn-server-blue').classList.toggle('active-btn', player === 'blue'); document.getElementById('btn-server-red').classList.toggle('active-btn', player === 'red'); }
+        async function startGame() { if (targetSets === null || initialServer === null) { showNotice("설정을 완료해주세요."); return; } await requestWakeLock(); if (!isGameStarted) { scores.blue = handicaps.blue; scores.red = handicaps.red; isGameStarted = true; } document.getElementById('handicap-modal').style.display = 'none'; updateDisplay(); }
 
-        function setInitialServer(player) { 
-            if (isGameStarted) return;
-            initialServer = player; currentServer = player; 
-            document.getElementById('btn-server-blue').classList.toggle('active-btn', player === 'blue'); 
-            document.getElementById('btn-server-red').classList.toggle('active-btn', player === 'red'); 
-        }
-
-        async function startGame() { 
-            if (targetSets === null) { showNotice("경기 방식을 선택해 주세요."); return; }
-            if (initialServer === null) { showNotice("첫 서브권을 선택해 주세요."); return; }
-            
-            await requestWakeLock();
-
-            if (!isGameStarted) { scores.blue = handicaps.blue; scores.red = handicaps.red; isGameStarted = true; }
-            document.getElementById('handicap-modal').style.display = 'none'; 
-            updateDisplay(); 
-        }
-
-        function changeScore(player, delta) {
-            if (!isGameStarted) return;
-            if (scores[player] + delta >= 0) {
-                scores[player] += delta;
-                calculateServer();
-                updateDisplay();
-                if (delta > 0) {
-                    const opponent = (currentServer === 'blue' ? 'red' : 'blue');
-                    speakScore(`${scores[currentServer]} 대 ${scores[opponent]}`);
-                }
-                checkSetWinner();
-            }
-        }
-
-        function changeSetScore(player, delta) {
-            if (sets[player] + delta >= 0) {
-                sets[player] += delta;
-                updateDisplay();
-            }
-        }
-
-        function calculateServer() {
-            const total = scores.blue + scores.red, hSum = handicaps.blue + handicaps.red;
-            const other = (initialServer === 'blue' ? 'red' : 'blue');
-            if (scores.blue >= 10 && scores.red >= 10) currentServer = (total % 2 === hSum % 2) ? initialServer : other;
-            else currentServer = (Math.floor(total / 2) % 2 === Math.floor(hSum / 2) % 2) ? initialServer : other;
-        }
-
-        function checkSetWinner() {
-            if ((scores.blue >= 11 || scores.red >= 11) && Math.abs(scores.blue - scores.red) >= 2) {
-                setHistory.push(`${scores.blue}:${scores.red}`);
-                sets[scores.blue > scores.red ? 'blue' : 'red']++;
-                updateDisplay();
-                if (sets.blue === targetSets || sets.red === targetSets) { endGameImmediately(); } 
-                else { 
-                    speakScore("세트 종료");
-                    scores.blue = handicaps.blue; scores.red = handicaps.red; 
-                    initialServer = (initialServer === 'blue' ? 'red' : 'blue'); currentServer = initialServer; 
-                    updateDisplay(); 
-                }
-            }
-        }
-
-        function updateDisplay() {
-            document.getElementById('score-blue').innerText = scores.blue; document.getElementById('score-red').innerText = scores.red;
-            document.getElementById('set-blue').innerText = sets.blue; document.getElementById('set-red').innerText = sets.red;
-            document.getElementById('area-blue').classList.toggle('serving', currentServer === 'blue'); document.getElementById('area-red').classList.toggle('serving', currentServer === 'red');
-        }
-
-        function speakScore(text) {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'ko-KR'; msg.rate = 1.1;
-            window.speechSynthesis.speak(msg);
-        }
-        
-        function adjHandi(p, v) { 
-            const n = handicaps[p] + v;
-            if (n >= 0 && n <= 10) { 
-                handicaps[p] = n; 
-                if (n > 0) { handicaps[p==='blue'?'red':'blue'] = 0; document.getElementById(`disp-handi-${p==='blue'?'red':'blue'}`).innerText = 0; }
-                document.getElementById(`disp-handi-${p}`).innerText = n; 
-                if (!isGameStarted || (scores.blue === handicaps.blue && scores.red === handicaps.red)) { scores.blue = handicaps.blue; scores.red = handicaps.red; updateDisplay(); }
-            }
-        }
-
+        function changeScore(player, delta) { if (!isGameStarted) return; if (scores[player] + delta >= 0) { scores[player] += delta; calculateServer(); updateDisplay(); if (delta > 0) speakScore(`${scores.blue} 대 ${scores.red}`); checkSetWinner(); } }
+        function changeSetScore(player, delta) { if (sets[player] + delta >= 0) { sets[player] += delta; updateDisplay(); } }
+        function calculateServer() { const total = scores.blue + scores.red, hSum = handicaps.blue + handicaps.red; const other = (initialServer === 'blue' ? 'red' : 'blue'); if (scores.blue >= 10 && scores.red >= 10) currentServer = (total % 2 === hSum % 2) ? initialServer : other; else currentServer = (Math.floor(total / 2) % 2 === Math.floor(hSum / 2) % 2) ? initialServer : other; }
+        function checkSetWinner() { if ((scores.blue >= 11 || scores.red >= 11) && Math.abs(scores.blue - scores.red) >= 2) { setHistory.push(`${scores.blue}:${scores.red}`); sets[scores.blue > scores.red ? 'blue' : 'red']++; if (sets.blue === targetSets || sets.red === targetSets) { endGameImmediately(); } else { speakScore("세트 종료"); scores.blue = handicaps.blue; scores.red = handicaps.red; initialServer = (initialServer === 'blue' ? 'red' : 'blue'); currentServer = initialServer; updateDisplay(); } } }
+        function updateDisplay() { document.getElementById('score-blue').innerText = scores.blue; document.getElementById('score-red').innerText = scores.red; document.getElementById('set-blue').innerText = sets.blue; document.getElementById('set-red').innerText = sets.red; document.getElementById('area-blue').classList.toggle('serving', currentServer === 'blue'); document.getElementById('area-red').classList.toggle('serving', currentServer === 'red'); }
+        function speakScore(text) { window.speechSynthesis.cancel(); const msg = new SpeechSynthesisUtterance(text); msg.lang = 'ko-KR'; window.speechSynthesis.speak(msg); }
+        function adjHandi(p, v) { const n = handicaps[p] + v; if (n >= 0 && n <= 10) { handicaps[p] = n; if (n > 0) handicaps[p==='blue'?'red':'blue'] = 0; document.getElementById('disp-handi-blue').innerText = handicaps.blue; document.getElementById('disp-handi-red').innerText = handicaps.red; } }
         function openModifySetup() { document.getElementById('handicap-modal').style.display = 'flex'; }
-        function askNewGame() { showQuestion("모든 점수를 초기화하고 새 경기를 시작할까요?", () => autoResetAll()); }
-
-        function autoResetAll(keepResult = false) {
-            scores={blue:0,red:0}; sets={blue:0,red:0}; handicaps={blue:0,red:0};
-            targetSets = null; initialServer = null; currentServer = null; isGameStarted = false; setHistory = [];
-            if(!keepResult) document.getElementById('last-result-box').style.display = 'none';
-            document.getElementById('game-container').style.flexDirection = 'row'; 
-            document.getElementById('minus-group').style.flexDirection = 'row';
-            document.querySelectorAll('.game-mode-btn, .server-btn').forEach(b => b.classList.remove('active-btn'));
-            document.getElementById('disp-handi-blue').innerText = 0; document.getElementById('disp-handi-red').innerText = 0; 
-            updateDisplay(); document.getElementById('handicap-modal').style.display = 'flex'; 
-        }
-        
-        document.addEventListener('visibilitychange', async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                await requestWakeLock();
-            }
-        });
+        function askNewGame() { showQuestion("새 경기를 시작할까요?", () => autoResetAll()); }
+        function autoResetAll(keepResult = false) { scores={blue:0,red:0}; sets={blue:0,red:0}; handicaps={blue:0,red:0}; targetSets = null; initialServer = null; currentServer = null; isGameStarted = false; setHistory = []; if(!keepResult) document.getElementById('last-result-box').style.display = 'none'; updateDisplay(); document.getElementById('handicap-modal').style.display = 'flex'; }
     </script>
 </body>
 </html>
