@@ -58,12 +58,12 @@
         .fs-btn { position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; z-index: 3000; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         .fs-btn.active { background: #27ae60; border-color: #fff; }
 
-        #stt-toggle-btn { position: fixed; top: 50px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
+        #stt-toggle-btn { position: fixed; top: 65px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         #stt-toggle-btn.active { background: #27ae60; border-color: #fff; }
         
         .top-info-text { position: fixed; left: 12px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; line-height: 1.4; text-align: left; }
-        .info-landscape { top: 32px; }
-        .info-spacing { top: 72px; }
+        .info-landscape { top: 38px; }
+        .info-spacing { top: 93px; }
 
         .modal-info-text { text-align: center; font-size: 0.75rem; color: #fff; opacity: 0.8; margin-top: 2vh; line-height: 1.5; }
 
@@ -216,10 +216,9 @@
         async function requestWakeLock() { 
             if ('wakeLock' in navigator) { 
                 try { 
+                    if (wakeLock) await wakeLock.release();
                     wakeLock = await navigator.wakeLock.request('screen'); 
-                    wakeLock.addEventListener('release', () => {
-                        console.log('Wake Lock was released');
-                    });
+                    console.log('Wake Lock is active');
                 } catch (err) {
                     console.error(`${err.name}, ${err.message}`);
                 } 
