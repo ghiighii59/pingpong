@@ -308,7 +308,18 @@
         function adjHandi(p, v) { const n = handicaps[p] + v; if (n >= 0 && n <= 10) { handicaps[p] = n; if (n > 0) handicaps[p==='blue'?'red':'blue'] = 0; document.getElementById('disp-handi-blue').innerText = handicaps.blue; document.getElementById('disp-handi-red').innerText = handicaps.red; } }
         function openModifySetup() { document.getElementById('handicap-modal').style.display = 'flex'; }
         function askNewGame() { showQuestion("새 경기를 시작할까요?", () => autoResetAll()); }
-        function autoResetAll(keepResult = false) { scores={blue:0,red:0}; sets={blue:0,red:0}; handicaps={blue:0,red:0}; targetSets = null; initialServer = null; currentServer = null; isGameStarted = false; setHistory = []; if(!keepResult) document.getElementById('last-result-box').style.display = 'none'; updateDisplay(); document.getElementById('handicap-modal').style.display = 'flex'; }
+        function autoResetAll(keepResult = false) { 
+            scores={blue:0,red:0}; sets={blue:0,red:0}; handicaps={blue:0,red:0}; 
+            targetSets = null; initialServer = null; currentServer = null; isGameStarted = false; setHistory = []; 
+            if(!keepResult) document.getElementById('last-result-box').style.display = 'none'; 
+            
+            document.querySelectorAll('.game-mode-btn, .server-btn').forEach(b => b.classList.remove('active-btn'));
+            document.getElementById('disp-handi-blue').innerText = '0';
+            document.getElementById('disp-handi-red').innerText = '0';
+            
+            updateDisplay(); 
+            document.getElementById('handicap-modal').style.display = 'flex'; 
+        }
     </script>
 </body>
 </html>
