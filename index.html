@@ -224,16 +224,26 @@
         }, { passive: true });
 
         window.addEventListener('keydown', (e) => {
+
+            if (e.key === 'AudioVolumeUp' || e.key === 'AudioVolumeDown' || e.keyCode === 175 || e.keyCode === 174) {
+                e.preventDefault();
+            }
+
             if (isModalOpen()) return;
 
-            if (e.key === 'AudioVolumeUp') { e.preventDefault(); changeScore('red', 1); }
-            else if (e.key === 'AudioVolumeDown') { e.preventDefault(); changeScore('blue', 1); }
-            
+
+            if (e.key === 'AudioVolumeUp' || e.keyCode === 175) { 
+                changeScore('red', 1); 
+            }
+            else if (e.key === 'AudioVolumeDown' || e.keyCode === 174) { 
+                changeScore('blue', 1); 
+            }
+
             else if (['PageUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); changeScore('red', 1); }
             else if (['PageDown', 'ArrowRight'].includes(e.key)) { e.preventDefault(); changeScore('blue', 1); }
             else if (['ArrowUp', 'p', 'P'].includes(e.key)) { e.preventDefault(); changeScore('blue', 1); }
             else if (['Enter', ' ', 'ArrowDown', 'n', 'N'].includes(e.key)) { e.preventDefault(); changeScore('red', 1); }
-        });
+        }, true);
 
         function isModalOpen() { return (document.getElementById('handicap-modal').style.display === 'flex' || document.getElementById('custom-alert-modal').style.display === 'flex' || document.getElementById('custom-confirm-modal').style.display === 'flex'); }
 
