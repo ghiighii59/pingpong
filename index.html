@@ -3,62 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>탁구 스코어보드 (키 확인용)</title>
+    <title>탁구 스코어보드</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; margin: 0; background: #000; color: white; overflow: hidden; display: flex; height: 100vh; width: 100vw; outline: none; }
         #game-container { display: flex; width: 100%; height: 100%; transition: flex-direction 0.3s; flex-direction: row; }
         
-        /* 키 확인용 알림창 스타일 */
-        #key-debug { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 0, 0.9); color: #000; padding: 20px; border-radius: 10px; font-size: 2rem; font-weight: bold; z-index: 9999; pointer-events: none; display: none; }
-
         .player-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; max-width: calc(50% - 70px); background: #1a1a1a; padding: 2vh 0; }
+        
         .label-wrapper { display: flex; align-items: center; gap: 3vw; margin-bottom: 0; position: relative; margin-top: 5vh; width: 80%; justify-content: center; }
+        
         .player-label { font-size: 5vh; font-weight: bold; position: relative; top: 5vh; }
         .label-blue { color: #3498db; }
         .label-red { color: #e74c3c; }
+        
         .set-minus-btn { position: fixed; top: 17vh; background: rgba(255,255,255,0.1); font-size: 2.5vh; width: 5vh; height: 5vh; border-radius: 50%; border: 1.5px solid #555; color: #888; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 110; }
         .set-minus-blue { left: calc(50% - 35px); transform: translateX(-50%); border-color: #3498db; color: #3498db; }
         .set-minus-red { left: calc(50% + 35px); transform: translateX(-50%); border-color: #e74c3c; color: #e74c3c; }
+
         .set-digit { font-size: 20vh; color: #f1c40f; font-weight: bold; line-height: 1; }
+
         .score { font-size: 45vh; line-height: 1; font-weight: 900; user-select: none; letter-spacing: -2vh; transform: scaleX(0.85); transform-origin: center; text-align: center; white-space: nowrap; pointer-events: none; margin-top: -5vh; }
+        
         .voice-guide { font-size: 0.8rem; color: white; opacity: 0.8; margin-top: 2vh; font-weight: normal; text-align: center; line-height: 1.4; }
+
         .serve-dot { font-size: 8vh; color: white; visibility: hidden; margin-top: 2vh; margin-bottom: 1vh; }
         .serving .serve-dot { visibility: visible; }
+        
         .controls { width: 140px; min-width: 140px; background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; padding: 5px 0; gap: 1.5vh; border: none !important; outline: none; }
+        
         .btn { padding: 8px 5px; font-size: 0.85rem; cursor: pointer; border: none; border-radius: 8px; background: #333; color: white; width: 90%; font-weight: bold; }
         .reset-btn { background: #c0392b; }
+        
         .setup-btn { background: #2980b9; height: auto; min-height: 0; }
+
         .minus-group { display: flex; width: 100%; justify-content: space-around; margin-top: 13vh; padding: 0 10px; box-sizing: border-box; transition: flex-direction 0.3s; flex-direction: row; }
         .minus-btn { background: rgba(255,255,255,0.1); font-size: 4vh; width: 8vh; height: 8vh; max-width: 50px; max-height: 50px; border-radius: 50%; border: 2px solid #555; color: #888; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .minus-blue { border-color: #3498db; color: #3498db; }
         .minus-red { border-color: #e74c3c; color: #e74c3c; }
+        
         .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
         .modal-content { background: #000; padding: 2vh 5vw; border-radius: 25px; text-align: center; max-width: 90%; max-height: 95vh; overflow-y: hidden; border: none !important; outline: none; }
+        
         .modal-title { color: gold; font-size: 5vh; margin-top: 1vh; margin-bottom: 3vh; font-weight: bold; }
+        
         .game-mode-btn { width: 130px; height: 48px; font-size: 1.4rem; border-radius: 12px; border: none; color: white; cursor: pointer; background: #333; font-weight: bold; }
         .server-btn { width: 160px; height: 48px; font-size: 1.4rem; border-radius: 12px; border: none; color: white; cursor: pointer; background: #333; font-weight: bold; }
+        
         .handi-label { font-size: 1.4rem; font-weight: bold; margin-bottom: 5px; }
         .handi-num { font-size: 2.2rem; width: 50px; font-weight: bold; }
+        
         .start-btn { width: 320px; height: 48px; font-size: 1.4rem; background: #27ae60; border: none; border-radius: 15px; color: white; font-weight: bold; margin-top: 3vh; cursor: pointer; }
+
         .active-btn { border: 3px solid gold !important; background: #555 !important; }
+        
         .fs-btn { position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; z-index: 3000; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         .fs-btn.active { background: #27ae60 !important; border-color: #fff !important; }
+
         #stt-toggle-btn { position: fixed; top: 70px; left: 10px; z-index: 3001; background: rgba(255,255,255,0.2); padding: 5px 10px; font-size: 0.8rem; border-radius: 8px; color: white; border: 1px solid #555; cursor: pointer; }
         #stt-toggle-btn.active { background: #27ae60; border-color: #fff; }
+        
         .top-info-text { position: fixed; left: 12px; font-size: 0.75rem; color: #fff; opacity: 0.8; z-index: 3001; line-height: 1.4; text-align: left; }
+        
         .info-landscape { top: 45px; }
         .info-spacing { top: 105px; }
+
         .modal-info-text { text-align: center; font-size: 0.75rem; color: #fff; opacity: 0.8; margin-top: 2vh; line-height: 1.5; }
+
         .last-result-box { margin-top: 1.5vh; padding: 1vh 2vw; background: rgba(255,215,0,0.08); border: none !important; border-radius: 15px; display: none; }
         .handi-btn { width: 40px; height: 40px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 24px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div id="key-debug">눌린 키: </div>
-
     <button class="fs-btn" id="fullScreenBtn">전체화면</button>
     <div class="top-info-text info-landscape">※ 가로모드 권장</div>
+
     <button id="stt-toggle-btn">음성인식 시작</button>
     <div class="top-info-text info-spacing">※ 띄어읽기 권장<br>※ 안될시 새로고침</div>
 
@@ -70,19 +89,23 @@
             </div>
             <div class="serve-dot">●</div>
             <div class="score" id="score-blue">0</div>
-            <div class="voice-guide">(음성🎤) 블루 원 / 블루 마이너스</div>
+            <div class="voice-guide">(음성🎤) <span style="color:orange;">블루 원</span> : 점수 +1<br>(음성🎤) <span style="color:orange;">블루 마이너스</span> : 점수 -1</div>
         </div>
+        
         <div class="controls">
             <div class="set-minus-btn set-minus-blue" onclick="event.stopPropagation(); changeSetScore('blue', -1)">−</div>
             <div class="set-minus-btn set-minus-red" onclick="event.stopPropagation(); changeSetScore('red', -1)">−</div>
+
             <button class="btn setup-btn" onclick="openModifySetup()">현재경기 설정변경</button>
             <button class="btn" onclick="switchTable()">테이블 전환</button>
             <button class="btn reset-btn" onclick="askNewGame()">새 경기</button>
+            
             <div class="minus-group" id="minus-group">
                 <div class="minus-btn minus-blue" onclick="event.stopPropagation(); changeScore('blue', -1)">−</div>
                 <div class="minus-btn minus-red" onclick="event.stopPropagation(); changeScore('red', -1)">−</div>
             </div>
         </div>
+        
         <div class="player-area" id="area-red" onclick="changeScore('red', 1)">
             <div class="label-wrapper" id="label-wrapper-red" style="flex-direction: row;">
                 <div class="set-digit" id="set-red">0</div>
@@ -90,12 +113,16 @@
             </div>
             <div class="serve-dot">●</div>
             <div class="score" id="score-red">0</div>
-            <div class="voice-guide">(음성🎤) 레드 원 / 레드 마이너스</div>
+            <div class="voice-guide">(음성🎤) <span style="color:orange;">레드 원</span> : 점수 +1<br>(음성🎤) <span style="color:orange;">레드 마이너스</span> : 점수 -1</div>
         </div>
     </div>
 
     <div id="handicap-modal" class="modal-overlay" style="display: flex;">
         <div class="modal-content">
+            <div class="modal-info-text" style="font-size: 0.85rem; margin-bottom: 3vh; opacity: 1;">
+                ※ 음성인식 비프음을 없애려면 다음과 같이 설정하세요.<br>
+                ▶ 설정(앱) ➜ 소리 및 진동 ➜ 음량 ➜ 알림 (소리 낮추기)
+            </div>
             <div style="display: flex; gap: 10px; margin-bottom: 1.5vh; justify-content: center;">
                 <button id="mode-3" class="game-mode-btn" onclick="checkGameModeChange(2)">3판2승</button>
                 <button id="mode-5" class="game-mode-btn" onclick="checkGameModeChange(3)">5판3승</button>
@@ -106,52 +133,45 @@
                 <button id="btn-server-red" class="server-btn" onclick="setInitialServer('red')" style="color:#e74c3c;">레드 첫 서브</button>
             </div>
             <div style="display: flex; gap: 40px; justify-content: center; margin-top: 1vh;">
-                <div><div class="label-blue handi-label">블루 핸디</div><div style="display:flex; align-items:center; gap:15px; justify-content:center;"><button class="handi-btn" onclick="adjHandi('blue',-1)">-</button><div id="disp-handi-blue" class="handi-num">0</div><button class="handi-btn" onclick="adjHandi('blue',1)">+</button></div></div>
-                <div><div class="label-red handi-label">레드 핸디</div><div style="display:flex; align-items:center; gap:15px; justify-content:center;"><button class="handi-btn" onclick="adjHandi('red',-1)">-</button><div id="disp-handi-red" class="handi-num">0</div><button class="handi-btn" onclick="adjHandi('red',1)">+</button></div></div>
+                <div>
+                    <div class="label-blue handi-label">블루 핸디</div>
+                    <div style="display:flex; align-items:center; gap:15px; justify-content:center;">
+                        <button class="handi-btn" onclick="adjHandi('blue',-1)">-</button>
+                        <div id="disp-handi-blue" class="handi-num">0</div>
+                        <button class="handi-btn" onclick="adjHandi('blue',1)">+</button>
+                    </div>
+                </div>
+                <div>
+                    <div class="label-red handi-label">레드 핸디</div>
+                    <div style="display:flex; align-items:center; gap:15px; justify-content:center;">
+                        <button class="handi-btn" onclick="adjHandi('red',-1)">-</button>
+                        <div id="disp-handi-red" class="handi-num">0</div>
+                        <button class="handi-btn" onclick="adjHandi('red',1)">+</button>
+                    </div>
+                </div>
             </div>
             <button class="start-btn" onclick="startGame()">경기 시작 / 재개</button>
-            <div id="last-result-box" class="last-result-box"><div id="last-result-score" style="font-size:1.4rem; font-weight:bold;"></div></div>
+            <div id="last-result-box" class="last-result-box"><div style="color:gold; font-size: 0.9rem;">직전 경기 결과</div><div id="last-result-score" style="font-size:1.4rem; font-weight:bold;"></div><div id="last-result-detail" style="color:#aaa; font-size: 0.8rem;"></div></div>
         </div>
     </div>
 
-    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><div id="custom-alert-msg"></div><button class="btn" onclick="closeCustomAlert()">확인</button></div></div>
-    <div id="custom-confirm-modal" class="modal-overlay"><div class="modal-content"><div id="custom-confirm-msg"></div><div style="display:flex; gap:15px; justify-content:center;"><button class="btn" id="confirm-no-btn">아니오</button><button class="btn" id="confirm-yes-btn">예</button></div></div></div>
+    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><div id="custom-alert-msg" style="font-size: 1.2rem; margin-bottom: 20px;"></div><button class="btn" onclick="closeCustomAlert()" style="background:#27ae60; height:45px; width:100px;">확인</button></div></div>
+    <div id="custom-confirm-modal" class="modal-overlay"><div class="modal-content"><div id="custom-confirm-msg" style="font-size: 1.2rem; margin-bottom: 20px;"></div><div style="display:flex; gap:15px; justify-content:center;"><button class="btn" id="confirm-no-btn" style="background:#555; width:80px;">아니오</button><button class="btn" id="confirm-yes-btn" style="background:#c0392b; width:80px;">예</button></div></div></div>
 
     <script>
         let scores = { blue: 0, red: 0 }, sets = { blue: 0, red: 0 }, handicaps = { blue: 0, red: 0 };
         let currentServer = null, initialServer = null, targetSets = null, isGameStarted = false, setHistory = [];
         let scrollLock = false, wakeLock = null;
 
-        // 키 디버깅 함수
-        function showKeyDebug(keyName) {
-            const debugEl = document.getElementById('key-debug');
-            debugEl.innerText = "눌린 키: " + keyName;
-            debugEl.style.display = 'block';
-            setTimeout(() => { debugEl.style.display = 'none'; }, 2000);
-        }
-
-        window.addEventListener('keydown', (e) => {
-            showKeyDebug(e.key); // 화면에 눌린 키 이름 표시
-            
-            // 볼륨 버튼 차단 시도
-            if (e.key.includes('Volume')) {
-                e.preventDefault();
-                if (e.key === 'AudioVolumeUp') changeScore('red', 1);
-                if (e.key === 'AudioVolumeDown') changeScore('blue', 1);
-            }
-
-            if (isModalOpen()) return;
-            if (['PageUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); changeScore('red', 1); }
-            else if (['PageDown', 'ArrowRight'].includes(e.key)) { e.preventDefault(); changeScore('blue', 1); }
-        }, true);
-
-        // --- 이하 기존 로직 유지 ---
         const recognition = (window.SpeechRecognition || window.webkitSpeechRecognition) ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
         let isSttActive = false;
+
         if (recognition) {
-            recognition.lang = 'ko-KR'; recognition.continuous = true;
-            recognition.onresult = (e) => {
-                const text = e.results[e.results.length - 1][0].transcript.replace(/\s/g, "");
+            recognition.lang = 'ko-KR';
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.onresult = (event) => {
+                const text = event.results[event.results.length - 1][0].transcript.replace(/\s/g, "");
                 if (text.includes("블루마이너스")) changeScore('blue', -1);
                 else if (text.includes("레드마이너스")) changeScore('red', -1);
                 else if (text.includes("블루원")) changeScore('blue', 1);
@@ -159,33 +179,164 @@
             };
             recognition.onend = () => { if (isSttActive) recognition.start(); };
         }
+
+        document.getElementById('stt-toggle-btn').addEventListener('click', toggleSTT);
+        document.getElementById('fullScreenBtn').addEventListener('click', toggleFullScreen);
+
+        document.addEventListener('fullscreenchange', () => {
+            const fsBtn = document.getElementById('fullScreenBtn');
+            if (document.fullscreenElement) {
+                fsBtn.classList.add('active');
+            } else {
+                fsBtn.classList.remove('active');
+            }
+        });
+
         function toggleSTT() {
+            if (!recognition) return alert("지원하지 않는 브라우저입니다.");
             const btn = document.getElementById('stt-toggle-btn');
             if (!isSttActive) { isSttActive = true; recognition.start(); btn.innerText = "음성인식 중.."; btn.classList.add('active'); }
             else { isSttActive = false; recognition.stop(); btn.innerText = "음성인식 시작"; btn.classList.remove('active'); }
         }
-        async function requestWakeLock() { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); }
-        function isModalOpen() { return document.getElementById('handicap-modal').style.display === 'flex'; }
+
+        async function requestWakeLock() { 
+            if ('wakeLock' in navigator) { 
+                try { 
+                    if (wakeLock) await wakeLock.release();
+                    wakeLock = await navigator.wakeLock.request('screen'); 
+                } catch (err) { console.error(`${err.name}, ${err.message}`); } 
+            } 
+        }
+
+        document.addEventListener('visibilitychange', async () => { if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock(); });
+
+        window.addEventListener('wheel', (e) => {
+            if (isModalOpen() || !isGameStarted || scrollLock) return;
+            scrollLock = true;
+            
+            if (e.deltaY < 0) {
+                changeScore('red', 1);
+            } else if (e.deltaY > 0) {
+                changeScore('blue', 1);
+            }
+            
+            setTimeout(() => { scrollLock = false; }, 300);
+        }, { passive: true });
+
+        // 볼륨 키 신호 강제 가로채기
+        window.addEventListener('keydown', (e) => {
+            // 볼륨 버튼 동작 차단 시도
+            if (e.key === 'AudioVolumeUp' || e.key === 'AudioVolumeDown' || e.keyCode === 175 || e.keyCode === 174) {
+                e.preventDefault();
+            }
+
+            if (isModalOpen()) return;
+
+            // 볼륨 업 -> 레드 점수 / 볼륨 다운 -> 블루 점수
+            if (e.key === 'AudioVolumeUp' || e.keyCode === 175) { 
+                changeScore('red', 1); 
+            }
+            else if (e.key === 'AudioVolumeDown' || e.keyCode === 174) { 
+                changeScore('blue', 1); 
+            }
+            // 기존 단축키들
+            else if (['PageUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); changeScore('red', 1); }
+            else if (['PageDown', 'ArrowRight'].includes(e.key)) { e.preventDefault(); changeScore('blue', 1); }
+            else if (['ArrowUp', 'p', 'P'].includes(e.key)) { e.preventDefault(); changeScore('blue', 1); }
+            else if (['Enter', ' ', 'ArrowDown', 'n', 'N'].includes(e.key)) { e.preventDefault(); changeScore('red', 1); }
+        }, true); // 캡처링 모드 사용
+
+        function isModalOpen() { return (document.getElementById('handicap-modal').style.display === 'flex' || document.getElementById('custom-alert-modal').style.display === 'flex' || document.getElementById('custom-confirm-modal').style.display === 'flex'); }
+
         function switchTable() {
             const container = document.getElementById('game-container');
+            const minusGroup = document.getElementById('minus-group');
             const isReversed = container.style.flexDirection === 'row-reverse';
             container.style.flexDirection = isReversed ? 'row' : 'row-reverse';
+            minusGroup.style.flexDirection = isReversed ? 'row' : 'row-reverse';
+            
+            const bWrapper = document.getElementById('label-wrapper-blue');
+            const rWrapper = document.getElementById('label-wrapper-red');
+            if (!isReversed) {
+                bWrapper.style.flexDirection = 'row';
+                rWrapper.style.flexDirection = 'row-reverse';
+            } else {
+                bWrapper.style.flexDirection = 'row-reverse';
+                rWrapper.style.flexDirection = 'row';
+            }
+
+            const bBtn = document.querySelector('.set-minus-blue');
+            const rBtn = document.querySelector('.set-minus-red');
+            if (!isReversed) { bBtn.style.left = "calc(50% + 35px)"; rBtn.style.left = "calc(50% - 35px)"; }
+            else { bBtn.style.left = "calc(50% - 35px)"; rBtn.style.left = "calc(50% + 35px)"; }
         }
-        async function toggleFullScreen() { if (!document.fullscreenElement) { await document.documentElement.requestFullscreen(); requestWakeLock(); } else document.exitFullscreen(); }
-        function checkGameModeChange(val) { setGameMode(val); }
+
+        function showNotice(msg) { document.getElementById('custom-alert-msg').innerText = msg; document.getElementById('custom-alert-modal').style.display = 'flex'; }
+        function closeCustomAlert() { document.getElementById('custom-alert-modal').style.display = 'none'; }
+        function showQuestion(msg, onYes) {
+            document.getElementById('custom-confirm-msg').innerHTML = msg;
+            document.getElementById('custom-confirm-modal').style.display = 'flex';
+            document.getElementById('confirm-yes-btn').onclick = () => { document.getElementById('custom-confirm-modal').style.display = 'none'; onYes(); };
+            document.getElementById('confirm-no-btn').onclick = () => { document.getElementById('custom-confirm-modal').style.display = 'none'; };
+        }
+
+        async function toggleFullScreen() {
+            if (!document.fullscreenElement) { 
+                await document.documentElement.requestFullscreen(); 
+                await requestWakeLock(); 
+            }
+            else { 
+                await document.exitFullscreen(); 
+                if (wakeLock) { await wakeLock.release(); wakeLock = null; } 
+            }
+        }
+
+        function checkGameModeChange(val) {
+            const maxS = Math.max(sets.blue, sets.red);
+            if (isGameStarted && maxS >= val) { showQuestion(`경기를 종료하시겠습니까?`, () => { targetSets = val; endGameImmediately(); }); }
+            else { setGameMode(val); }
+        }
+
+        function endGameImmediately() {
+            speakScore("경기 종료");
+            document.getElementById('last-result-score').innerText = `블루 ${sets.blue} : ${sets.red} 레드`;
+            document.getElementById('last-result-detail').innerText = `(${setHistory.length > 0 ? setHistory.join(', ') : '중도 종료'})`;
+            document.getElementById('last-result-box').style.display = 'block';
+            autoResetAll(true);
+        }
+
         function setGameMode(val) { targetSets = val; document.querySelectorAll('.game-mode-btn').forEach(b => b.classList.remove('active-btn')); document.getElementById(`mode-${val*2-1}`).classList.add('active-btn'); }
-        function setInitialServer(p) { initialServer = p; currentServer = p; document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active-btn')); document.getElementById(`btn-server-${p}`).classList.add('active-btn'); }
-        function startGame() { if (!targetSets || !initialServer) return; scores.blue = handicaps.blue; scores.red = handicaps.red; isGameStarted = true; document.getElementById('handicap-modal').style.display = 'none'; updateDisplay(); }
-        function changeScore(p, d) { if (!isGameStarted) return; if (scores[p] + d >= 0) { scores[p] += d; calculateServer(); updateDisplay(); if (d > 0) speakScore(currentServer === 'blue' ? `${scores.blue} 대 ${scores.red}` : `${scores.red} 대 ${scores.blue}`); checkSetWinner(); } }
-        function changeSetScore(p, d) { if (sets[p] + d >= 0) { sets[p] += d; updateDisplay(); } }
-        function calculateServer() { const t = scores.blue + scores.red; const other = (initialServer === 'blue' ? 'red' : 'blue'); if (scores.blue >= 10 && scores.red >= 10) currentServer = (t % 2 === 0) ? initialServer : other; else currentServer = (Math.floor(t / 2) % 2 === 0) ? initialServer : other; }
-        function checkSetWinner() { if ((scores.blue >= 11 || scores.red >= 11) && Math.abs(scores.blue - scores.red) >= 2) { sets[scores.blue > scores.red ? 'blue' : 'red']++; if (sets.blue === targetSets || sets.red === targetSets) { speakScore("경기 종료"); autoResetAll(true); } else { speakScore("세트 종료"); scores.blue = handicaps.blue; scores.red = handicaps.red; initialServer = (initialServer === 'blue' ? 'red' : 'blue'); currentServer = initialServer; updateDisplay(); } } }
+        function setInitialServer(player) { if (isGameStarted) return; initialServer = player; currentServer = player; document.getElementById('btn-server-blue').classList.toggle('active-btn', player === 'blue'); document.getElementById('btn-server-red').classList.toggle('active-btn', player === 'red'); }
+        async function startGame() { if (targetSets === null || initialServer === null) { showNotice("설정을 완료해주세요."); return; } await requestWakeLock(); if (!isGameStarted) { scores.blue = handicaps.blue; scores.red = handicaps.red; isGameStarted = true; } document.getElementById('handicap-modal').style.display = 'none'; updateDisplay(); }
+
+        function changeScore(player, delta) { 
+            if (!isGameStarted) return; 
+            if (scores[player] + delta >= 0) { 
+                scores[player] += delta; calculateServer(); updateDisplay(); 
+                if (delta > 0) speakScore(currentServer === 'blue' ? `${scores.blue} 대 ${scores.red}` : `${scores.red} 대 ${scores.blue}`);
+                checkSetWinner(); 
+            } 
+        }
+        function changeSetScore(player, delta) { if (sets[player] + delta >= 0) { sets[player] += delta; updateDisplay(); } }
+        function calculateServer() { const total = scores.blue + scores.red, hSum = handicaps.blue + handicaps.red; const other = (initialServer === 'blue' ? 'red' : 'blue'); if (scores.blue >= 10 && scores.red >= 10) currentServer = (total % 2 === hSum % 2) ? initialServer : other; else currentServer = (Math.floor(total / 2) % 2 === Math.floor(hSum / 2) % 2) ? initialServer : other; }
+        function checkSetWinner() { if ((scores.blue >= 11 || scores.red >= 11) && Math.abs(scores.blue - scores.red) >= 2) { setHistory.push(`${scores.blue}:${scores.red}`); sets[scores.blue > scores.red ? 'blue' : 'red']++; if (sets.blue === targetSets || sets.red === targetSets) endGameImmediately(); else { speakScore("세트 종료"); scores.blue = handicaps.blue; scores.red = handicaps.red; initialServer = (initialServer === 'blue' ? 'red' : 'blue'); currentServer = initialServer; updateDisplay(); } } }
         function updateDisplay() { document.getElementById('score-blue').innerText = scores.blue; document.getElementById('score-red').innerText = scores.red; document.getElementById('set-blue').innerText = sets.blue; document.getElementById('set-red').innerText = sets.red; document.getElementById('area-blue').classList.toggle('serving', currentServer === 'blue'); document.getElementById('area-red').classList.toggle('serving', currentServer === 'red'); }
-        function speakScore(t) { window.speechSynthesis.cancel(); const m = new SpeechSynthesisUtterance(t); m.lang = 'ko-KR'; window.speechSynthesis.speak(m); }
-        function adjHandi(p, v) { handicaps[p] = Math.max(0, handicaps[p] + v); document.getElementById(`disp-handi-${p}`).innerText = handicaps[p]; }
+        function speakScore(text) { window.speechSynthesis.cancel(); const msg = new SpeechSynthesisUtterance(text); msg.lang = 'ko-KR'; window.speechSynthesis.speak(msg); }
+        function adjHandi(p, v) { const n = handicaps[p] + v; if (n >= 0 && n <= 10) { handicaps[p] = n; if (n > 0) handicaps[p==='blue'?'red':'blue'] = 0; document.getElementById('disp-handi-blue').innerText = handicaps.blue; document.getElementById('disp-handi-red').innerText = handicaps.red; } }
         function openModifySetup() { document.getElementById('handicap-modal').style.display = 'flex'; }
-        function askNewGame() { autoResetAll(); }
-        function autoResetAll(k) { scores={blue:0,red:0}; sets={blue:0,red:0}; isGameStarted=false; document.getElementById('handicap-modal').style.display='flex'; updateDisplay(); }
+        function askNewGame() { showQuestion("새 경기를 시작할까요?", () => autoResetAll()); }
+        function autoResetAll(keepResult = false) { 
+            scores={blue:0,red:0}; sets={blue:0,red:0}; handicaps={blue:0,red:0}; 
+            targetSets = null; initialServer = null; currentServer = null; isGameStarted = false; setHistory = []; 
+            if(!keepResult) document.getElementById('last-result-box').style.display = 'none'; 
+            
+            document.querySelectorAll('.game-mode-btn, .server-btn').forEach(b => b.classList.remove('active-btn'));
+            document.getElementById('disp-handi-blue').innerText = '0';
+            document.getElementById('disp-handi-red').innerText = '0';
+            
+            updateDisplay(); 
+            document.getElementById('handicap-modal').style.display = 'flex'; 
+        }
     </script>
 </body>
 </html>
