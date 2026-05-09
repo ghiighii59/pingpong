@@ -45,8 +45,6 @@
         .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
         .modal-content { background: #000; padding: 2vh 5vw; border-radius: 25px; text-align: center; max-width: 90%; max-height: 95vh; overflow-y: hidden; border: none !important; outline: none; }
         
-        .modal-title { color: gold; font-size: 5vh; margin-top: 1vh; margin-bottom: 3vh; font-weight: bold; }
-        
         .game-mode-btn { width: 130px; height: 48px; font-size: 1.4rem; border-radius: 12px; border: none; color: white; cursor: pointer; background: #333; font-weight: bold; }
         .server-btn { width: 160px; height: 48px; font-size: 1.4rem; border-radius: 12px; border: none; color: white; cursor: pointer; background: #333; font-weight: bold; }
         
@@ -83,14 +81,14 @@
     <div class="top-info-text info-spacing">※ 띄어읽기 권장<br>※ 안될시 새로고침</div>
 
     <div id="game-container">
-        <div class="player-area" id="area-blue" onclick="changeScore('blue', 1)">
+        <div class="player-area" id="area-blue" onclick="processSideClick('left')">
             <div class="label-wrapper" id="label-wrapper-blue" style="flex-direction: row-reverse;">
                 <div class="set-digit" id="set-blue">0</div>
                 <div class="player-label label-blue">블루</div>
             </div>
             <div class="serve-dot">●</div>
             <div class="score" id="score-blue">0</div>
-            <div class="voice-guide">(음성🎤) <span style="color:orange;">블루 원</span> : 점수 +1<br>(음성🎤) <span style="color:orange;">블루 마이너스</span> : 점수 -1</div>
+            <div class="voice-guide">(음성🎤) <span style="color:orange;">블루 원</span> : 점수 +1</div>
         </div>
         
         <div class="controls">
@@ -107,22 +105,21 @@
             </div>
         </div>
         
-        <div class="player-area" id="area-red" onclick="changeScore('red', 1)">
+        <div class="player-area" id="area-red" onclick="processSideClick('right')">
             <div class="label-wrapper" id="label-wrapper-red" style="flex-direction: row;">
                 <div class="set-digit" id="set-red">0</div>
                 <div class="player-label label-red">레드</div>
             </div>
             <div class="serve-dot">●</div>
             <div class="score" id="score-red">0</div>
-            <div class="voice-guide">(음성🎤) <span style="color:orange;">레드 원</span> : 점수 +1<br>(음성🎤) <span style="color:orange;">레드 마이너스</span> : 점수 -1</div>
+            <div class="voice-guide">(음성🎤) <span style="color:orange;">레드 원</span> : 점수 +1</div>
         </div>
     </div>
 
     <div id="handicap-modal" class="modal-overlay" style="display: flex;">
         <div class="modal-content">
             <div class="modal-info-text" style="font-size: 0.85rem; margin-bottom: 3vh; opacity: 1;">
-                ※ 음성인식 비프음을 없애려면 다음과 같이 설정하세요.<br>
-                ▶ 설정(앱) ➜ 소리 및 진동 ➜ 음량 ➜ 알림 (소리 낮추기)
+                ※ 리모컨 위/아래 버튼을 누르면 해당 위치의 점수가 올라갑니다.
             </div>
             <div style="display: flex; gap: 10px; margin-bottom: 1.5vh; justify-content: center;">
                 <button id="mode-3" class="game-mode-btn" onclick="checkGameModeChange(2)">3판2승</button>
@@ -163,6 +160,7 @@
         let scores = { blue: 0, red: 0 }, sets = { blue: 0, red: 0 }, handicaps = { blue: 0, red: 0 };
         let currentServer = null, initialServer = null, targetSets = null, isGameStarted = false, setHistory = [];
         let scrollLock = false, wakeLock = null;
+        let lastMouseY = 0;
 
         const recognition = (window.SpeechRecognition || window.webkitSpeechRecognition) ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
         let isSttActive = false;
@@ -184,14 +182,30 @@
         document.getElementById('stt-toggle-btn').addEventListener('click', toggleSTT);
         document.getElementById('fullScreenBtn').addEventListener('click', toggleFullScreen);
 
-        document.addEventListener('fullscreenchange', () => {
-            const fsBtn = document.getElementById('fullScreenBtn');
-            if (document.fullscreenElement) {
-                fsBtn.classList.add('active');
-            } else {
-                fsBtn.classList.remove('active');
+        window.addEventListener('mousemove', (e) => {
+            if (isModalOpen() || !isGameStarted) return;
+            
+            if (Math.abs(e.clientY - lastMouseY) > 15) {
+                const target = document.elementFromPoint(e.clientX, e.clientY);
+                if (target) {
+                    const area = target.closest('.player-area');
+                    if (area) area.click();
+                }
             }
+            lastMouseY = e.clientY;
         });
+
+        function processSideClick(side) {
+            if (!isGameStarted) return;
+            const container = document.getElementById('game-container');
+            const isReversed = container.style.flexDirection === 'row-reverse';
+            
+            if (side === 'left') {
+                changeScore(isReversed ? 'red' : 'blue', 1);
+            } else {
+                changeScore(isReversed ? 'blue' : 'red', 1);
+            }
+        }
 
         function toggleSTT() {
             if (!recognition) return alert("지원하지 않는 브라우저입니다.");
@@ -214,40 +228,21 @@
         window.addEventListener('wheel', (e) => {
             if (isModalOpen() || !isGameStarted || scrollLock) return;
             scrollLock = true;
-            
-            if (e.deltaY < 0) {
-                changeScore('red', 1);
-            } else if (e.deltaY > 0) {
-                changeScore('blue', 1);
-            }
-            
+            if (e.deltaY < 0) changeScore('red', 1);
+            else if (e.deltaY > 0) changeScore('blue', 1);
             setTimeout(() => { scrollLock = false; }, 300);
         }, { passive: true });
 
         window.addEventListener('keydown', (e) => {
             const key = e.key;
             const code = e.keyCode;
-            const isReversed = document.getElementById('game-container').style.flexDirection === 'row-reverse';
-
-            // 차단 리스트
-            const targets = ['AudioVolumeUp', 'AudioVolumeDown', 'PageUp', 'PageDown'];
-            const targetCodes = [175, 174, 33, 34];
-
-            if (targets.includes(key) || targetCodes.includes(code)) {
+            if (['AudioVolumeUp', 'AudioVolumeDown', 'PageUp', 'PageDown'].includes(key) || [175, 174, 33, 34].includes(code)) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
             }
-
             if (isModalOpen()) return;
-
-            if (key === 'PageUp' || code === 33 || key === 'AudioVolumeUp' || code === 175) { 
-                changeScore('red', 1); 
-            }
-            else if (key === 'PageDown' || code === 34 || key === 'AudioVolumeDown' || code === 174) { 
-                changeScore('blue', 1); 
-            }
-            else if (key === 'ArrowLeft') { e.preventDefault(); changeScore(isReversed ? 'blue' : 'red', 1); }
-            else if (key === 'ArrowRight') { e.preventDefault(); changeScore(isReversed ? 'red' : 'blue', 1); }
+            if (key === 'PageUp' || code === 33 || key === 'AudioVolumeUp' || code === 175) processSideClick('right');
+            else if (key === 'PageDown' || code === 34 || key === 'AudioVolumeDown' || code === 174) processSideClick('left');
         }, true);
 
         function isModalOpen() { return (document.getElementById('handicap-modal').style.display === 'flex' || document.getElementById('custom-alert-modal').style.display === 'flex' || document.getElementById('custom-confirm-modal').style.display === 'flex'); }
@@ -258,9 +253,6 @@
             const isReversed = container.style.flexDirection === 'row-reverse';
             container.style.flexDirection = isReversed ? 'row' : 'row-reverse';
             minusGroup.style.flexDirection = isReversed ? 'row' : 'row-reverse';
-            
-            const areaBlue = document.getElementById('area-blue');
-            const areaRed = document.getElementById('area-red');
             
             const bWrapper = document.getElementById('label-wrapper-blue');
             const rWrapper = document.getElementById('label-wrapper-red');
@@ -288,14 +280,8 @@
         }
 
         async function toggleFullScreen() {
-            if (!document.fullscreenElement) { 
-                await document.documentElement.requestFullscreen(); 
-                await requestWakeLock(); 
-            }
-            else { 
-                await document.exitFullscreen(); 
-                if (wakeLock) { await wakeLock.release(); wakeLock = null; } 
-            }
+            if (!document.fullscreenElement) { await document.documentElement.requestFullscreen(); await requestWakeLock(); }
+            else { await document.exitFullscreen(); if (wakeLock) { await wakeLock.release(); wakeLock = null; } }
         }
 
         function checkGameModeChange(val) {
@@ -336,13 +322,10 @@
             scores={blue:0,red:0}; sets={blue:0,red:0}; handicaps={blue:0,red:0}; 
             targetSets = null; initialServer = null; currentServer = null; isGameStarted = false; setHistory = []; 
             if(!keepResult) document.getElementById('last-result-box').style.display = 'none'; 
-            
             document.querySelectorAll('.game-mode-btn, .server-btn').forEach(b => b.classList.remove('active-btn'));
             document.getElementById('disp-handi-blue').innerText = '0';
             document.getElementById('disp-handi-red').innerText = '0';
-            
-            updateDisplay(); 
-            document.getElementById('handicap-modal').style.display = 'flex'; 
+            updateDisplay(); document.getElementById('handicap-modal').style.display = 'flex'; 
         }
     </script>
 </body>
